@@ -2,7 +2,8 @@
 
 This repository implements Aston Cryptography algortihm for RISCV ISA.
 
-## Prerequrities
+## Prerequisites
+----------------
 
   1. RISCV GNU Toolchain should be installed for riscv64-unknown-elf-gcc compiler
   2. Spike and pk should be installed for simulating compiled elf binary. (pk should be installed for RV32)

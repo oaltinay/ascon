@@ -1,0 +1,3 @@
+/home/ozlem/Desktop/trials/ascon/CMakeFiles/rebuild_cache.dir
+/home/ozlem/Desktop/trials/ascon/CMakeFiles/hello.dir
+/home/ozlem/Desktop/trials/ascon/CMakeFiles/edit_cache.dir

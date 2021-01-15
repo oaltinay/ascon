@@ -1,11 +1,14 @@
-#include <stdio.h>
+
 #include "api.h"
 #include "encrypt_decrypt.h"
+
+#include <stdio.h>
+#include <string.h>
 
 void print(unsigned char c, unsigned char* x, unsigned long long xlen) {
   unsigned long long i;
   printf("%c[%d]=", c, (int)xlen);
-  for (i = 0; i < xlen; ++i) printf("%02x", x[i]);
+  for (i = 0; i < xlen; ++i) printf("%c", x[i]);
   printf("\n");
 }
 
@@ -14,18 +17,21 @@ int main ()
   int result;
   unsigned long long alen = 0;
   unsigned long long mlen = 0;
-  unsigned long long clen = CRYPTO_ABYTES;
+  unsigned long long clen = 0;
+
   unsigned char a[] = "ASCON";
   unsigned char m[] = "altinayaltinayalti";
   unsigned char c[strlen((const char*)m) + CRYPTO_ABYTES];
   unsigned char nsec[CRYPTO_NSECBYTES];
   unsigned char npub[CRYPTO_NPUBBYTES] = {0};
   unsigned char k[CRYPTO_KEYBYTES] = "ozlemozlemozlemo";
+
   alen = strlen((const char*)a);
   mlen = strlen((const char*)m);
 
-  printf("Key\n");
+  printf("\nKey\n");
   print('k', k, CRYPTO_KEYBYTES);
+  printf("\n");
 
   printf("Nonce\n");
   print('n', npub, CRYPTO_NPUBBYTES);
@@ -33,25 +39,29 @@ int main ()
 
   printf("Associated data\n");
   print('a', a, alen);
+  printf("\n");
 
   printf("Plain Text\n");
   print('m', m, mlen);
+  printf("\n");
 
   printf("Starting encryption...\n");
   result |= crypto_aead_encrypt(c, &clen, m, mlen, a, alen, nsec, npub, k);
 
   printf("Cipher Text\n");
   print('c', c, clen - CRYPTO_ABYTES);
-
+  printf("\n");
+  
   printf("Tag\n");
   print('t', c + clen - CRYPTO_ABYTES, CRYPTO_ABYTES);
-
+  printf("\n");
+  
   printf("Starting decryption...\n");
   result |= crypto_aead_decrypt(m, &mlen, nsec, c, clen, a, alen, npub, k);
 
   printf("Associated data\n");
   print('a', a, alen);
-
+  printf("\n");
   printf("Plain Text\n");
   print('m', m, mlen);
   printf("\n");

@@ -2,7 +2,9 @@
 #define PERMUTATIONS_H_
 
 #include "endian.h"
+#include "read_csr.h"
 
+#include <stdio.h>
 typedef unsigned char u8;
 typedef unsigned int u32;
 typedef unsigned long long u64;

@@ -1,6 +1,9 @@
 #include "api.h"
 #include "endian.h"
 #include "permutations.h"
+#include "read_csr.h"
+
+#include <stdio.h>
 
 #define RATE (128 / 8)
 #define PA_ROUNDS 12
@@ -20,6 +23,8 @@ int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
   u64 tmp0, tmp1;
   u32 i;
   (void)nsec;
+
+  unsigned long cycle_end, cycle_start ;
 
   // set ciphertext size
   *clen = mlen + CRYPTO_ABYTES;

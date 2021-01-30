@@ -20,11 +20,11 @@ int main ()
   unsigned long long clen = 0;
 
   unsigned char a[] = "ASCON";
-  unsigned char m[] = "altinayaltinayalti";
+  unsigned char m[] = "altinayaltinayal";
   unsigned char c[strlen((const char*)m) + CRYPTO_ABYTES];
   unsigned char nsec[CRYPTO_NSECBYTES];
   unsigned char npub[CRYPTO_NPUBBYTES] = {0};
-  unsigned char k[CRYPTO_KEYBYTES] = "ozlemozlemozlemo";
+  unsigned char k[CRYPTO_KEYBYTES] = "ozlemozlemozlemo";               
 
   alen = strlen((const char*)a);
   mlen = strlen((const char*)m);
@@ -46,8 +46,12 @@ int main ()
   printf("\n");
 
   printf("Starting encryption...\n");
-  result |= crypto_aead_encrypt(c, &clen, m, mlen, a, alen, nsec, npub, k);
+          unsigned long cycle_end, cycle_start;  \
+          read_cycle(cycle_start);\
 
+  result |= crypto_aead_encrypt(c, &clen, m, mlen, a, alen, nsec, npub, k);
+                      read_cycle(cycle_end); \
+      printf("Test::Took %lu cycles in function.\n", cycle_end - cycle_start); \
   printf("Cipher Text\n");
   print('c', c, clen - CRYPTO_ABYTES);
   printf("\n");

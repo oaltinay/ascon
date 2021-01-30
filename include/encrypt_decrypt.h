@@ -1,6 +1,8 @@
 #ifndef  ENCRYPT_DECRYPT_H_
 #define  ENCRYPT_DECRYPT_H_
 
+#include "read_csr.h"
+
 int crypto_aead_encrypt(unsigned char* c, unsigned long long* clen,
                         const unsigned char* m, unsigned long long mlen,
                         const unsigned char* ad, unsigned long long adlen,

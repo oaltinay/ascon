@@ -6,6 +6,8 @@ set(CMAKE_CROSSCOMPILING 1)
 set(CMAKE_C_COMPILER "riscv64-unknown-elf-gcc")
 set(CMAKE_CXX_COMPILER "riscv64-unknown-elf-g++")
 set(CMAKE_ASM_COMPILER "riscv64-unknown-elf-gcc")
+SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
+SET(CMAKE_C_FLAGS_DEBUG "-O0")
 
 project (ascon)
 

@@ -1,0 +1,10 @@
+{
+  "files.associations": {
+    "*.def": "c",
+    "encrypt_decrypt.h": "c",
+    "api.h": "c",
+    "read_csr.h": "c",
+    "permutations.h": "c"
+  },
+  "cmake.configureOnOpen": true
+}

@@ -6,16 +6,11 @@ set(CMAKE_CROSSCOMPILING 1)
 set(CMAKE_C_COMPILER "riscv64-unknown-elf-gcc")
 set(CMAKE_CXX_COMPILER "riscv64-unknown-elf-g++")
 set(CMAKE_ASM_COMPILER "riscv64-unknown-elf-gcc")
-SET(CMAKE_CXX_FLAGS_DEBUG "-O0")
-SET(CMAKE_C_FLAGS_DEBUG "-O0")
 
 project (ascon)
 
-set(CMAKE_C_FLAGS "-march=rv32imafdc -mabi=ilp32")
-#Bring the headers into the project
+set(CMAKE_C_FLAGS "-O0 -march=rv32i -mabi=ilp32")
+
 include_directories(include)
- 
-#However, the file(GLOB...) allows for wildcard additions:
 file(GLOB SOURCES "src/*.c")
- 
-add_executable(ascon_encrypt ${SOURCES})
+add_executable(ascon ${SOURCES})

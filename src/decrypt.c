@@ -21,6 +21,8 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
 
   u32_2 K0, K1, N0, N1;
   u32_2 x0, x1, x2, x3, x4;
+  u32 s_o[5] = {x0.o, x1.o, x2.o, x3.o, x4.o};
+  u32 s_e[5] = {x0.e, x1.e, x2.e, x3.e, x4.e};
   u32_2 t0, t1, t2, t3, t4;
   u64 tmp0, tmp1;
   u32 i;
@@ -36,29 +38,31 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
 
   // initialization
   to_bit_interleaving(x0, IV);
-  x1.o = K0.o;
-  x1.e = K0.e;
-  x2.e = K1.e;
-  x2.o = K1.o;
-  x3.e = N0.e;
-  x3.o = N0.o;
-  x4.e = N1.e;
-  x4.o = N1.o;
+  s_o[0] = x0.o;
+  s_e[0] = x0.e; 
+  s_o[1] = K0.o;
+  s_e[1] = K0.e;
+  s_e[2] = K1.e;
+  s_o[2] = K1.o;
+  s_e[3] = N0.e;
+  s_o[3] = N0.o;
+  s_e[4] = N1.e;
+  s_o[4] = N1.o;
   P12();
-  x3.e ^= K0.e;
-  x3.o ^= K0.o;
-  x4.e ^= K1.e;
-  x4.o ^= K1.o;
+  s_e[3] ^= K0.e;
+  s_o[3] ^= K0.o;
+  s_e[4] ^= K1.e;
+  s_o[4] ^= K1.o;
 
   // process associated data
   if (adlen) {
     while (adlen >= RATE) {
       to_bit_interleaving(t0, U64BIG(*(u64*)ad));
-      x0.e ^= t0.e;
-      x0.o ^= t0.o;
+      s_e[0] ^= t0.e;
+      s_o[0] ^= t0.o;
       to_bit_interleaving(t1, U64BIG(*(u64*)(ad + 8)));
-      x1.e ^= t1.e;
-      x1.o ^= t1.o;
+      s_e[1] ^= t1.e;
+      s_o[1] ^= t1.o;
       P8();
       adlen -= RATE;
       ad += RATE;
@@ -75,30 +79,38 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
     else
       tmp1 ^= INS_BYTE64(0x80, adlen % 8);
     to_bit_interleaving(t0, tmp0);
-    x0.e ^= t0.e;
-    x0.o ^= t0.o;
+    s_e[0] ^= t0.e;
+    s_o[0] ^= t0.o;
     to_bit_interleaving(t1, tmp1);
-    x1.e ^= t1.e;
-    x1.o ^= t1.o;
+    s_e[1] ^= t1.e;
+    s_o[1] ^= t1.o;
     P8();
   }
-  x4.e ^= 1;
+  s_e[4] ^= 1;
 
   // process plaintext
   clen -= CRYPTO_ABYTES;
   while (clen >= RATE) {
+    x0.e = s_e[0]; x0.o = s_o[0]; 
     from_bit_interleaving(tmp0, x0);
+    x1.e = s_e[1]; x1.o = s_o[1];
     from_bit_interleaving(tmp1, x1);
     *(u64*)m = U64BIG(tmp0) ^ *(u64*)c;
     *(u64*)(m + 8) = U64BIG(tmp1) ^ *(u64*)(c + 8);
     to_bit_interleaving(x0, U64BIG(*(u64*)c));
+    s_o[0] = x0.o;
+    s_e[0] = x0.e; 
     to_bit_interleaving(x1, U64BIG(*(u64*)(c + 8)));
+    s_o[1] = x1.o;
+    s_e[1] = x1.e; 
     P8();
     clen -= RATE;
     m += RATE;
     c += RATE;
   }
+  x0.e = s_e[0]; x0.o = s_o[0];
   from_bit_interleaving(tmp0, x0);
+  x1.e = s_e[1]; x1.o = s_o[1];
   from_bit_interleaving(tmp1, x1);
   for (i = 0; i < clen; ++i, ++m, ++c) {
     if (i < 8) {
@@ -116,27 +128,30 @@ int crypto_aead_decrypt(unsigned char* m, unsigned long long* mlen,
   else
     tmp1 ^= INS_BYTE64(0x80, clen % 8);
   to_bit_interleaving(x0, tmp0);
+  s_o[0] = x0.o;
+  s_e[0] = x0.e; 
   to_bit_interleaving(x1, tmp1);
+  s_o[1] = x1.o;
+  s_e[1] = x1.e; 
 
   // finalization
-  x2.e ^= K0.e;
-  x2.o ^= K0.o;
-  x3.e ^= K1.e;
-  x3.o ^= K1.o;
+  s_e[2] ^= K0.e;
+  s_o[2] ^= K0.o;
+  s_e[3] ^= K1.e;
+  s_o[3] ^= K1.o;
   P12();
-  x3.e ^= K0.e;
-  x3.o ^= K0.o;
-  x4.e ^= K1.e;
-  x4.o ^= K1.o;
+  s_e[3] ^= K0.e;
+  s_o[3] ^= K0.o;
+  s_e[4] ^= K1.e;
+  s_o[4] ^= K1.o;
 
   // verify tag (should be constant time, check compiler output)
   to_bit_interleaving(t0, U64BIG(*(u64*)c));
   to_bit_interleaving(t1, U64BIG(*(u64*)(c + 8)));
-  if (((x3.e ^ t0.e) | (x3.o ^ t0.o) | (x4.e ^ t1.e) | (x4.o ^ t1.o)) != 0) {
+  if (((s_e[3] ^ t0.e) | (s_o[3] ^ t0.o) | (s_e[4] ^ t1.e) | (s_o[4] ^ t1.o)) != 0) {
     *mlen = 0;
     return -1;
   }
 
   return 0;
 }
-

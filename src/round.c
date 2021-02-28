@@ -10,7 +10,6 @@ void ROUND(u32 C_e, u32 C_o, u32* s_e, u32* s_o)
   /* round constant */ 
   s_e[2] ^= C_e;                      s_o[2] ^= C_o; 
   /* s-box layer */ 
-  read_insn(cycle_start);
   //__builtin_riscv_sbox(s_e, 1);
   //__builtin_riscv_sbox(s_o, 1); 
   s_e[0] ^= s_e[4];                  s_o[0] ^= s_o[4];
@@ -29,8 +28,7 @@ void ROUND(u32 C_e, u32 C_o, u32* s_e, u32* s_o)
   s_e[1] ^= s_e[0];                  s_o[1] ^= s_o[0]; 
   s_e[3] ^= s_e[2];                  s_o[3] ^= s_o[2]; 
   s_e[0] ^= s_e[4];                  s_o[0] ^= s_o[4];
-  /*linear layer */
-  read_insn(cycle_start); 
+  /*linear layer */ 
   t0.e  = s_e[0] ^ ROTR32(s_o[0], 4);   t0.o  = s_o[0] ^ ROTR32(s_e[0], 5); 
   t1.e  = s_e[1] ^ ROTR32(s_e[1], 11);  t1.o  = s_o[1] ^ ROTR32(s_o[1], 11); 
   t2.e  = s_e[2] ^ ROTR32(s_o[2], 2);   t2.o  = s_o[2] ^ ROTR32(s_e[2], 3); 

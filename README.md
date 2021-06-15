@@ -1,6 +1,7 @@
-# Implementation of Aston Cryptography Algorithm for RISCV ISA
+# Implementation of ASCON Cryptography Algorithm for RISCV ISA with GCC Built-ins
 
-This repository implements Aston Cryptography algortihm for RISCV ISA.
+This repository implements Aston Cryptography algortihm for RISCV ISA. S-box operations are made with special RISC-V instructions(sbox).
+
 
 ## Prerequisites
 
